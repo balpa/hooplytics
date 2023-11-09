@@ -12,11 +12,11 @@ export default function Home() {
     if (name !== '') {
       axios({
         method: 'post',
-        url: 'http://localhost:8000/api/welcome',
+        url: 'http://localhost:3001/api/welcomePost',
         data: { name: name },
         headers: { 'Content-Type': 'application/json' }
       })
-      .then((response) => setResponse(response))
+      .then((response) => setResponse(response.data))
       .catch((error) => console.log(error));
     }
   }
@@ -26,7 +26,7 @@ export default function Home() {
       <div style={{display:'flex', flexDirection: 'column', gap: '10px'}}>
         <input onChange={(e) => setName(e.target.value)} placeholder='write your name'></input>
         <button onClick={() => sendRequest()}>send request</button>
-        <div>response from the server: { response }</div>
+        <div>response: { response }</div>
       </div>
     </main>
   )

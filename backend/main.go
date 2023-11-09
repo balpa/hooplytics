@@ -3,8 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 type payload struct {
@@ -12,8 +14,6 @@ type payload struct {
 }
 
 func welcomeGet(w http.ResponseWriter, r *http.Request) {
-	setCorsHeaders(w)
-
 	if r.Method != http.MethodGet {
 		http.Error(w, "Only GET requests are allowed", http.StatusMethodNotAllowed)
 		return
@@ -24,8 +24,6 @@ func welcomeGet(w http.ResponseWriter, r *http.Request) {
 }
 
 func welcomePost(w http.ResponseWriter, r *http.Request) {
-	setCorsHeaders(w)
-
 	if r.Method != http.MethodPost {
 		http.Error(w, "Only POST requests are allowed", http.StatusMethodNotAllowed)
 		return
@@ -45,15 +43,21 @@ func welcomePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleRequests() {
-	http.HandleFunc("/api/welcomePost", welcomePost)
-	http.HandleFunc("/api/welcomeGet", welcomeGet)
-	log.Fatal(http.ListenAndServe(":8000", nil))
-}
+	r := mux.NewRouter()
 
-func setCorsHeaders(w http.ResponseWriter) {
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8000/api/welcome")
-	w.Header().Set("Access-Control-Max-Age", "10")
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+	})
+
+	http.Handle("/", corsHandler.Handler(r))
+
+	r.HandleFunc("/api/welcomeGet", welcomeGet)
+	r.HandleFunc("/api/welcomePost", welcomePost)
+
+	http.ListenAndServe(":3001", nil)
 }
 
 func main() {
