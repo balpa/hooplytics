@@ -3,7 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -15,14 +17,23 @@ type payload struct {
 	Script string `json:"script"`
 }
 
+func readFile(file string) string {
+	body, err := os.ReadFile(file)
+	if err != nil {
+		log.Fatalf("unable to read file: %v", err)
+	}
+
+	return string(body)
+}
+
 func executeRCode(script string) string {
-	rClient, err := roger.NewRClient("127.0.0.1", 3002)
+	rClient, err := roger.NewRClient("127.0.0.1", 6311) // default port 6311
 	if err != nil {
 		fmt.Println("Failed to create R client: " + err.Error())
 		return "Failed to create R client"
 	}
 
-	output, err := rClient.Eval(script)
+	output, err := rClient.Eval(readFile("./R/for_balpa.R"))
 	if err != nil {
 		fmt.Println("Command failed: " + err.Error())
 	}
