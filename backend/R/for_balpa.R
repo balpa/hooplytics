@@ -1,9 +1,22 @@
 library(tidyverse)
 library(rvest)
 url <- 'https://www.basketball-reference.com/players/g/grantje01/gamelog-advanced/2024/'
-print("ÖNÜ")
 
-tryCatch(read_html(url))
+document <- tryCatch(
+  expr = read_html("https://scrapeme.live/shop"),
+  error = function(e) {
+    message("Error while fetching the HTML content:", e)
+    return(NULL)
+  }
+)
+print("çıktı")
+print(document)
+
+
+df <- url %>% 
+  read_html() %>% 
+  html_table() %>% 
+  as.data.frame()
 
 print("test")
 
