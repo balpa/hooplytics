@@ -1,20 +1,13 @@
 library(tidyverse)
+library(xml2)
 library(rvest)
+
 url <- 'https://www.basketball-reference.com/players/g/grantje01/gamelog-advanced/2024/'
 
-document <- tryCatch(
-  expr = read_html("https://scrapeme.live/shop"),
-  error = function(e) {
-    message("Error while fetching the HTML content:", e)
-    return(NULL)
-  }
-)
-print("çıktı")
-print(document)
-
+print(guess_encoding(url))
 
 df <- url %>% 
-  read_html() %>% 
+  read_html(to = "ISO-8859-1") %>% 
   html_table() %>% 
   as.data.frame()
 
