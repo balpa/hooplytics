@@ -5,20 +5,6 @@ url <- 'https://www.basketball-reference.com/players/g/grantje01/gamelog-advance
 
 print("Before read_html")
 
-html_content <- tryCatch({
-  read_html(url)
-}, error = function(e) {
-  print(paste("Error occurred:", e))
-  return(NULL) 
-})
-
-if (is.null(html_content)) {
-  print("Error occurred during read_html.")
-} else {
-  print("Read HTML successfully.")
-  print(html_nodes(html_content, "div"))
-}
-
 df <- url %>% 
   read_html() %>% 
   html_table() %>% 
