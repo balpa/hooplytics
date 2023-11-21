@@ -27,18 +27,24 @@ func readFile(file string) string {
 }
 
 func executeRCode(script string) string {
-	rClient, err := roger.NewRClient("127.0.0.1", 6311) // default port 6311
+	rClient, err := roger.NewRClient("127.0.0.1", 6311)
 	if err != nil {
 		fmt.Println("Failed to create R client: " + err.Error())
-		return "Failed to create R client"
+		return "Failed to create R client" + err.Error()
 	}
 
-	output, err := rClient.Eval(readFile("./R/for_balpa.R"))
+	outputRaw, err := rClient.Eval(readFile("./R/for_balpa.R"))
 	if err != nil {
 		fmt.Println("Command failed: " + err.Error())
+		return "Command failed: " + err.Error()
 	}
 
-	return output.(string)
+	output, ok := outputRaw.(string)
+	if !ok {
+		return "Output is not a string"
+	}
+
+	return output
 }
 
 func executeR(w http.ResponseWriter, r *http.Request) {

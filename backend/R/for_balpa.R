@@ -1,35 +1,48 @@
 library(tidyverse)
-library(xml2)
 library(rvest)
 
 url <- 'https://www.basketball-reference.com/players/g/grantje01/gamelog-advanced/2024/'
 
-print(guess_encoding(url))
+print("Before read_html")
+
+html_content <- tryCatch({
+  read_html(url)
+}, error = function(e) {
+  print(paste("Error occurred:", e))
+  return(NULL) 
+})
+
+if (is.null(html_content)) {
+  print("Error occurred during read_html.")
+} else {
+  print("Read HTML successfully.")
+  print(html_nodes(html_content, "div"))
+}
 
 df <- url %>% 
-  read_html(to = "ISO-8859-1") %>% 
+  read_html() %>% 
   html_table() %>% 
   as.data.frame()
 
 print("test")
 
-df <- df %>% select(Date, Tm, MP, TS., USG.)
+# df <- df %>% select(Date, Tm, MP, TS., USG.)
 
-df <- df %>% filter(MP != "Inactive")
-df <- df %>% filter(MP != "Did Not Play")
-df <- df %>% filter(MP != "MP")
-df <- df %>% filter(MP != "Did Not Dress")
+# df <- df %>% filter(MP != "Inactive")
+# df <- df %>% filter(MP != "Did Not Play")
+# df <- df %>% filter(MP != "MP")
+# df <- df %>% filter(MP != "Did Not Dress")
 
-df$TS. <- as.numeric(df$TS.)
-df$USG. <- as.numeric(df$USG.)
-df$MP <- parse_number(df$MP)
+# df$TS. <- as.numeric(df$TS.)
+# df$USG. <- as.numeric(df$USG.)
+# df$MP <- parse_number(df$MP)
 
-df <- df %>%
-  filter(MP >= 25)
+# df <- df %>%
+#   filter(MP >= 25)
 
-df$TS. <- 100 * df$TS.
+# df$TS. <- 100 * df$TS.
 
-str(df)
+# str(df)
 
 # pl1 <- df %>% 
 #   ggplot(aes(x = USG., y = TS.))  +
